@@ -2,7 +2,7 @@
 
 Android 简单的折现图实现
 
-[](http://github.com/chrisArthas/SimpleLineChartView/raw/master/preview.png)
+[preview](http://github.com/chrisArthas/SimpleLineChartView/raw/master/preview.png)
 
 ##V1.0 
     支持输入数据（废话）以及横坐标
