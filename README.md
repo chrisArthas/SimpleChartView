@@ -2,7 +2,7 @@
 
 Android 简单的折现图实现
 
-[preview](http://github.com/chrisArthas/SimpleLineChartView/raw/master/preview.png)
+![预览效果](http://github.com/chrisArthas/SimpleLineChartView/raw/master/preview.png)
 
 ##V1.0 
     支持输入数据（废话）以及横坐标
@@ -28,7 +28,6 @@ xml中
 activity中
 ```
         lineChartsView = (LineChartsView)findViewById(R.id.linechartview);
-
         List<Integer> list = new ArrayList<>();
 
         list.add(170);
@@ -54,7 +53,6 @@ activity中
 
 
         lineChartsView.setYUnit(100);
-
         lineChartsView.setLineColor(this.getResources().getColor(R.color.colorPrimaryDark));
-        ```
+```
  
