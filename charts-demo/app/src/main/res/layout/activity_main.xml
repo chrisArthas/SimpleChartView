@@ -14,4 +14,33 @@
         android:layout_width="300dp"
         android:layout_height="300dp"
         color:axisColor="#DFDFDF"/>
+
+
+
+
+    <Button
+        android:id="@+id/btn1"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:text="add"
+        android:layout_alignParentBottom="true"/>
+
+    <EditText
+        android:id="@+id/ynum"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_above="@id/btn1"
+        android:inputType="number"
+        android:maxLength="3"
+        android:hint="y value"/>
+
+    <EditText
+        android:id="@+id/xnum"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_above="@id/btn1"
+        android:layout_toRightOf="@id/ynum"
+        android:layout_marginLeft="10dp"
+        android:maxLength="3"
+        android:hint="x value"/>
 </RelativeLayout>

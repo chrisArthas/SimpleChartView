@@ -3,6 +3,10 @@ package com.chartsdemo;
 import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.chartsdemo.views.LineChartsView;
 
@@ -11,7 +15,17 @@ import java.util.List;
 
 public class MainActivity extends Activity {
 
+    private Button btn1;
+
     private LineChartsView lineChartsView;
+
+    private EditText editTextYnum;
+
+    private EditText editTextXnum;
+
+    List<Integer> list;
+
+    List<String> namesList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,7 +34,12 @@ public class MainActivity extends Activity {
 
         lineChartsView = (LineChartsView)findViewById(R.id.linechartview);
 
-        List<Integer> list = new ArrayList<>();
+        btn1 = (Button)findViewById(R.id.btn1);
+
+        editTextYnum= (EditText)findViewById(R.id.ynum);
+        editTextXnum = (EditText)findViewById(R.id.xnum);
+
+         list = new ArrayList<>();
 
         list.add(170);
         list.add(100);
@@ -32,22 +51,42 @@ public class MainActivity extends Activity {
 
         lineChartsView.setData(list);
 
-        List<String> namesList = new ArrayList<>();
-        namesList.add("一月");
-        namesList.add("二月");
-        namesList.add("三月");
-        namesList.add("四月");
-        namesList.add("五月");
-        namesList.add("六月");
-        namesList.add("七月");
+        namesList = new ArrayList<>();
+        namesList.add("一");
+        namesList.add("二");
+        namesList.add("三");
+        namesList.add("四");
+        namesList.add("五");
+        namesList.add("六");
+        namesList.add("七");
 
         lineChartsView.setXAxisNames(namesList);
 
 
-        lineChartsView.setYUnit(100);
+        lineChartsView.setYUnit(50);
 
         lineChartsView.setLineColor(this.getResources().getColor(R.color.colorPrimaryDark));
 
 
+        btn1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String ynum = editTextYnum.getText().toString();
+                String xnum = editTextXnum.getText().toString();
+                if(!ynum.equals("")&& !xnum.equals(""))
+                {
+
+                    list.add(Integer.parseInt(ynum));
+                    namesList.add(xnum);
+                }else
+                {
+                    Toast.makeText(MainActivity.this,"x value or y value can not be null",Toast.LENGTH_SHORT).show();
+                }
+
+
+                lineChartsView.setDataChange();
+            }
+        });
     }
 }

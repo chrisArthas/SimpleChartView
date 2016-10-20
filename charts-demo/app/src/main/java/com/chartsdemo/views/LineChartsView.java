@@ -4,14 +4,21 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.EventLog;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import com.chartsdemo.R;
 import com.chartsdemo.util.ViewUtil;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Chris on 2016/10/17.
@@ -79,6 +86,8 @@ public class LineChartsView extends View {
     private List<Integer> dataList;
 
     private List<String> XAxisNames;
+
+    private ArrayList<Map<String,Float>> points = new ArrayList<>();
 
     public LineChartsView(Context context) {
         this(context, null, 0);
@@ -169,6 +178,49 @@ public class LineChartsView extends View {
         RIGHT = w - DEFAULT_MARGIN;
 
         XAxisWidth = (int)(w - DEFAULT_MARGIN*2);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        switch (event.getAction())
+        {
+            case MotionEvent.ACTION_DOWN:
+
+                int i = checkPoint(event);
+                if(i != -1)
+                {
+                    Toast.makeText(context,"click: " + (i+1) +" num is: " + dataList.get(i),Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+
+        return super.onTouchEvent(event);
+    }
+
+    /**
+     * 判断点击位置是否属于 数据中的点
+     * @param event
+     * @return true or false
+     */
+    private int checkPoint(MotionEvent event)
+    {
+        float x = event.getX();
+        float y = event.getY();
+
+        for(int i = 0;i <points.size();i++)
+        {
+            float tmpX = points.get(i).get("X");
+            float tmpY = points.get(i).get("Y");
+            if(tmpX<(x+20) && tmpX >(x-20))
+            {
+                if(tmpY<(y+20) && tmpY>(y-20))
+                {
+                    return i;
+                }
+            }
+        }
+        return -1;
     }
 
     private void drawAxis(Canvas canvas) {
@@ -263,10 +315,18 @@ public class LineChartsView extends View {
 
     private void drawPoint(Canvas canvas)
     {
+        points.clear();
 
         for(int i = 0;i<dataList.size();i++)
         {
             canvas.drawCircle(XUnit*(i+1)+DEFAULT_MARGIN,BOTTOM-dataList.get(i),pointRadius,pointPaint);
+
+
+            Map<String,Float> map = new HashMap<>();
+            map.put("X",XUnit*(i+1)+DEFAULT_MARGIN);
+            map.put("Y",BOTTOM-dataList.get(i));
+
+            points.add(map);
         }
 
     }
@@ -315,6 +375,11 @@ public class LineChartsView extends View {
         numTextSize = ViewUtil.sp2px(scaledDensity,textSize);
     }
 
+
+    public void setDataChange()
+    {
+        ViewCompat.postInvalidateOnAnimation(this);
+    }
 
     /**
      * 设置XY轴 提示字体颜色
