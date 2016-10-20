@@ -41,13 +41,13 @@ public class MainActivity extends Activity {
 
          list = new ArrayList<>();
 
-        list.add(170);
-        list.add(100);
-        list.add(350);
-        list.add(140);
-        list.add(200);
-        list.add(300);
-        list.add(300);
+        list.add(17);
+        list.add(10);
+        list.add(35);
+        list.add(14);
+        list.add(20);
+        list.add(30);
+        list.add(30);
 
         lineChartsView.setData(list);
 
@@ -63,7 +63,9 @@ public class MainActivity extends Activity {
         lineChartsView.setXAxisNames(namesList);
 
 
-        lineChartsView.setYUnit(50);
+        lineChartsView.setYUnit(5);
+
+        lineChartsView.setYCounts(20);
 
         lineChartsView.setLineColor(this.getResources().getColor(R.color.colorPrimaryDark));
 

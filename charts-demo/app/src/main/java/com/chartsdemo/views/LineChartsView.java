@@ -81,6 +81,15 @@ public class LineChartsView extends View {
 
     private float YUnit = 50;
 
+    //Y 每行 实际像素距离
+    private float YUnitDistance;
+
+    // 像素比
+    private float YRatio =  1;
+
+    //Y 行数
+    private int YCounts = 10;
+
     private float XUnit;
 
     private List<Integer> dataList;
@@ -155,6 +164,10 @@ public class LineChartsView extends View {
         // X 轴 间距
         XUnit = XAxisWidth/dataList.size();
 
+        YUnitDistance = YAxisHeight/YCounts;
+
+        YRatio = YUnitDistance/YUnit;
+
         drawBackLines(canvas);
 
         drawAxis(canvas);
@@ -226,14 +239,13 @@ public class LineChartsView extends View {
     private void drawAxis(Canvas canvas) {
         //Y 轴
         canvas.drawLine(DEFAULT_MARGIN, BOTTOM, DEFAULT_MARGIN, DEFAULT_MARGIN, axisPaint);
-        float YNums = YAxisHeight/YUnit;
-        Log.i(TAG,"YNums: " + YNums);
+//        float YNums = YAxisHeight/YUnit;
 
-        for(int i = 0 ;i < YNums-1;i++)
+        for(int i = 0 ;i < YCounts;i++)
         {
             String tmp = (int)YUnit + i*(int)YUnit +"";
 
-            canvas.drawText(tmp,DEFAULT_MARGIN-40,BOTTOM-(YUnit*(i+1))+5, numPaint);
+            canvas.drawText(tmp,DEFAULT_MARGIN-40,BOTTOM-(YUnitDistance*(i+1))+5, numPaint);
         }
 
 
@@ -252,7 +264,7 @@ public class LineChartsView extends View {
 
     private void drawBackLines(Canvas canvas)
     {
-        int nums = (int)(YAxisHeight/YUnit)*4;
+        int nums = (int)(YCounts)*4;
 
         float[] xPts = new float[nums];
 
@@ -272,13 +284,13 @@ public class LineChartsView extends View {
                 xPts[i-1] = DEFAULT_MARGIN;
             }else if(i%4 == 2)
             {
-                xPts[i-1] = BOTTOM-YUnit*((i/4)+1);
+                xPts[i-1] = BOTTOM-YUnitDistance*((i/4)+1);
             }else if(i%4 == 3)
             {
                 xPts[i-1] = RIGHT;
             }else
             {
-                xPts[i-1] = BOTTOM-YUnit*(i/4);
+                xPts[i-1] = BOTTOM-YUnitDistance*(i/4);
             }
 
         }
@@ -319,7 +331,7 @@ public class LineChartsView extends View {
 
         for(int i = 0;i<dataList.size();i++)
         {
-            canvas.drawCircle(XUnit*(i+1)+DEFAULT_MARGIN,BOTTOM-dataList.get(i),pointRadius,pointPaint);
+            canvas.drawCircle(XUnit*(i+1)+DEFAULT_MARGIN,BOTTOM-(dataList.get(i)*YRatio),pointRadius,pointPaint);
 
 
             Map<String,Float> map = new HashMap<>();
@@ -335,7 +347,7 @@ public class LineChartsView extends View {
     {
         for(int i = 0;i<dataList.size()-1;i++)
         {
-            canvas.drawLine(XUnit*(i+1)+50,BOTTOM-dataList.get(i),XUnit*(i+2)+50,BOTTOM-dataList.get(i+1),linePaint);
+            canvas.drawLine(XUnit*(i+1)+50,BOTTOM-(dataList.get(i)*YRatio),XUnit*(i+2)+50,BOTTOM-(dataList.get(i+1)*YRatio),linePaint);
         }
     }
 
@@ -364,6 +376,15 @@ public class LineChartsView extends View {
     public void setYUnit(int unit)
     {
         YUnit = unit;
+    }
+
+    /**
+     * Y 轴单位数量
+     * @param YCounts
+     */
+    public void setYCounts(int YCounts)
+    {
+        this.YCounts = YCounts;
     }
 
     /**
