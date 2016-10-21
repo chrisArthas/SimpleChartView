@@ -336,7 +336,7 @@ public class LineChartsView extends View {
 
             Map<String,Float> map = new HashMap<>();
             map.put("X",XUnit*(i+1)+DEFAULT_MARGIN);
-            map.put("Y",BOTTOM-dataList.get(i));
+            map.put("Y",BOTTOM-(dataList.get(i)*YRatio));
 
             points.add(map);
         }
