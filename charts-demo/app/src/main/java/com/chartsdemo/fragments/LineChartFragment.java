@@ -1,19 +1,27 @@
-package com.chartsdemo;
+package com.chartsdemo.fragments;
 
-import android.app.Activity;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.chartsdemo.R;
+import com.chartsdemo.activitys.MainActivity;
 import com.chartsdemo.views.LineChartsView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity {
+/**
+ * Created by win on 2017/4/20.
+ */
+
+public class LineChartFragment extends Fragment{
 
     private Button btn1;
 
@@ -27,19 +35,40 @@ public class MainActivity extends Activity {
 
     List<String> namesList;
 
+    public LineChartFragment() {
+    }
+
+    static public LineChartFragment getInstance()
+    {
+        return new LineChartFragment();
+    }
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.linechar_layout,null,false);
+    }
 
-        lineChartsView = (LineChartsView)findViewById(R.id.linechartview);
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initView(view);
+        initData();
+    }
 
-        btn1 = (Button)findViewById(R.id.btn1);
+    private void initView(View view)
+    {
+        lineChartsView = (LineChartsView)view.findViewById(R.id.linechartview);
 
-        editTextYnum= (EditText)findViewById(R.id.ynum);
-        editTextXnum = (EditText)findViewById(R.id.xnum);
+        btn1 = (Button)view.findViewById(R.id.btn1);
 
-         list = new ArrayList<>();
+        editTextYnum= (EditText)view.findViewById(R.id.ynum);
+        editTextXnum = (EditText)view.findViewById(R.id.xnum);
+    }
+
+    private void initData()
+    {
+        list = new ArrayList<>();
 
         list.add(17);
         list.add(10);
@@ -67,8 +96,6 @@ public class MainActivity extends Activity {
 
         lineChartsView.setYCounts(20);
 
-        lineChartsView.setLineColor(this.getResources().getColor(R.color.colorPrimaryDark));
-
 
         btn1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,7 +110,7 @@ public class MainActivity extends Activity {
                     namesList.add(xnum);
                 }else
                 {
-                    Toast.makeText(MainActivity.this,"x value or y value can not be null",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),"x value or y value can not be null",Toast.LENGTH_SHORT).show();
                 }
 
 

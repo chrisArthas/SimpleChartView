@@ -129,7 +129,7 @@ public class LineChartsView extends View {
         lineColor = context.getResources().getColor(R.color.lineColor);
         backLineColor = context.getResources().getColor(R.color.backLineColor);
 
-        numTextSize = ViewUtil.sp2px(scaledDensity,12);
+        numTextSize = ViewUtil.sp2px(scaledDensity,10);
     }
 
     @Override
@@ -143,6 +143,7 @@ public class LineChartsView extends View {
 
         numPaint = new Paint();
         numPaint.setColor(numColor);
+        numPaint.setStrokeWidth(1);
         numPaint.setTextSize(numTextSize);
 
         pointPaint = new Paint();
@@ -268,15 +269,6 @@ public class LineChartsView extends View {
 
         float[] xPts = new float[nums];
 
-//                {
-//        DEFAULT_MARGIN-15, BOTTOM-YUnit, RIGHT, BOTTOM-YUnit,
-//                DEFAULT_MARGIN-15, BOTTOM-YUnit*2, RIGHT, BOTTOM-YUnit*2,
-//                DEFAULT_MARGIN-15, BOTTOM-YUnit*3, RIGHT, BOTTOM-YUnit*3,
-//                DEFAULT_MARGIN-15, BOTTOM-YUnit*4, RIGHT, BOTTOM-YUnit*4,
-//                DEFAULT_MARGIN-15, BOTTOM-YUnit*5, RIGHT, BOTTOM-YUnit*5,
-//                DEFAULT_MARGIN-15, BOTTOM-YUnit*6, RIGHT, BOTTOM-YUnit*6,
-//                DEFAULT_MARGIN-15, BOTTOM-YUnit*7, RIGHT, BOTTOM-YUnit*7,
-//        };
         for(int i = 1;i < nums+1;i++)
         {
             if(i%4 == 1)
@@ -298,14 +290,7 @@ public class LineChartsView extends View {
         canvas.drawLines(xPts,backLinePaint);
 
         float[] yPts = new float[XAxisNames.size()*4];
-//                {
-//                        XUnit+DEFAULT_MARGIN, BOTTOM,   XUnit+DEFAULT_MARGIN, DEFAULT_MARGIN,
-//                        XUnit*2+DEFAULT_MARGIN, BOTTOM, XUnit*2+DEFAULT_MARGIN, DEFAULT_MARGIN,
-//                        XUnit*3+DEFAULT_MARGIN, BOTTOM, XUnit*3+DEFAULT_MARGIN, DEFAULT_MARGIN,
-//                        XUnit*4+DEFAULT_MARGIN, BOTTOM, XUnit*4+DEFAULT_MARGIN, DEFAULT_MARGIN,
-//                        XUnit*5+DEFAULT_MARGIN, BOTTOM, XUnit*5+DEFAULT_MARGIN, DEFAULT_MARGIN,
-//                        XUnit*6+DEFAULT_MARGIN, BOTTOM, XUnit*6+DEFAULT_MARGIN, DEFAULT_MARGIN,
-//                };
+
         for(int i = 1;i<(XAxisNames.size()*4+1);i++)
         {
             if(i%4 == 1)

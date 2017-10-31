@@ -12,4 +12,10 @@
     <color name="lineColor">#ff0000</color>
 
     <color name="backLineColor">#DDDDDD</color>
+
+    <!--panel start-->
+    <color name="panel_red">#D87A80</color>
+    <color name="panel_light_red">#E7DAC9</color>
+    <color name="panel_blue">#5AB1EF</color>
+    <color name="panel_light_green">#2EC7C9</color>
 </resources>
