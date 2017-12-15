@@ -3,7 +3,6 @@ package com.chartsdemo.views;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -24,7 +23,19 @@ public class PanelView extends View{
 
     private Paint textPaint;
 
+    private Paint scalePaint;
+
+    private Paint hourNeedlePaint;
+
+    private Paint minuteNeedlePaint;
+
+    private Paint secondNeedlePaint;
+
     private int mRadius = 100;
+
+    private int DEFAULT_HOUR_NEEDLE_LENGTH = 25;
+
+    private int DEFAULT_SECOND_NEEDLE_LENGTH = 15;
 
     public PanelView(Context context) {
         this(context, null, 0);
@@ -43,9 +54,9 @@ public class PanelView extends View{
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        int wrap_Len = 400;
-        int width = measureDimension(wrap_Len, widthMeasureSpec);
-        int height = measureDimension(wrap_Len, heightMeasureSpec);
+        int wrapLen = 400;
+        int width = measureDimension(wrapLen, widthMeasureSpec);
+        int height = measureDimension(wrapLen, heightMeasureSpec);
         int len=Math.min(width,height);
         //保证是一个正方形
         setMeasuredDimension(len,len);
@@ -56,52 +67,12 @@ public class PanelView extends View{
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        mRadius = (getWidth()-getPaddingLeft()-getPaddingRight())/2;//半径
+        //半径
+        mRadius = (getWidth()-getPaddingLeft()-getPaddingRight())/2 - 5;
 
         drawBack(canvas);
 
-//        Paint paint = new Paint();
-//        paint.setAntiAlias(true);
-//        paint.setStyle(Paint.Style.STROKE);
-//        canvas.translate(canvas.getWidth()/2, 200); //将位置移动画纸的坐标点:150,150
-//        canvas.drawCircle(0, 0, 100, paint); //画圆圈
-//
-//        //使用path绘制路径文字
-//        canvas.save();
-//        canvas.translate(-75, -75);
-//        Path path = new Path();
-//        path.addArc(new RectF(0,0,150,150), -180, 180);
-//        Paint citePaint = new Paint(paint);
-//        citePaint.setTextSize(14);
-//        citePaint.setStrokeWidth(1);
-//        canvas.drawTextOnPath("1111111", path, 28, 0, citePaint);
-//        canvas.restore();
-//
-//        Paint tmpPaint = new Paint(paint); //小刻度画笔对象
-//        tmpPaint.setStrokeWidth(1);
-//
-//        float  y=100;
-//        int count = 60; //总刻度数
-//
-//        for(int i=0 ; i <count ; i++){
-//            if(i%5 == 0){
-//                canvas.drawLine(0f, y, 0, y+12f, paint);
-//                canvas.drawText(String.valueOf(i/5+1), -4f, y+25f, tmpPaint);
-//
-//            }else{
-//                canvas.drawLine(0f, y, 0f, y +5f, tmpPaint);
-//            }
-//            canvas.rotate(360/count,0f,0f); //旋转画纸
-//        }
-//
-//        //绘制指针
-//        tmpPaint.setColor(Color.GRAY);
-//        tmpPaint.setStrokeWidth(4);
-//        canvas.drawCircle(0, 0, 7, tmpPaint);
-//        tmpPaint.setStyle(Paint.Style.FILL);
-//        tmpPaint.setColor(Color.YELLOW);
-//        canvas.drawCircle(0, 0, 5, tmpPaint);
-//        canvas.drawLine(0, 10, 0, -65, paint);
+        drawScale(canvas);
     }
 
     private void initPaint()
@@ -110,9 +81,35 @@ public class PanelView extends View{
         circlePaint.setStrokeWidth(2);
         circlePaint.setStyle(Paint.Style.STROKE);
         circlePaint.setColor(getResources().getColor(R.color.panel_light_green));
+        circlePaint.setAntiAlias(true);
 
         textPaint = new Paint();
         textPaint.setColor(getResources().getColor(R.color.panel_light_green));
+
+        scalePaint = new Paint();
+        scalePaint.setStrokeWidth(2);
+        scalePaint.setStyle(Paint.Style.STROKE);
+        scalePaint.setColor(getResources().getColor(R.color.numColor));
+        scalePaint.setAntiAlias(true);
+
+        hourNeedlePaint = new Paint();
+        hourNeedlePaint.setStrokeWidth(10);
+        hourNeedlePaint.setStyle(Paint.Style.STROKE);
+        hourNeedlePaint.setColor(getResources().getColor(R.color.numColor));
+        hourNeedlePaint.setAntiAlias(true);
+
+        minuteNeedlePaint = new Paint();
+        minuteNeedlePaint.setStrokeWidth(7);
+        minuteNeedlePaint.setStyle(Paint.Style.STROKE);
+        minuteNeedlePaint.setColor(getResources().getColor(R.color.numColor));
+        minuteNeedlePaint.setAntiAlias(true);
+
+        secondNeedlePaint = new Paint();
+        secondNeedlePaint.setStrokeWidth(5);
+        secondNeedlePaint.setStyle(Paint.Style.STROKE);
+        secondNeedlePaint.setColor(getResources().getColor(R.color.numColor));
+        secondNeedlePaint.setAntiAlias(true);
+
 
     }
 
@@ -121,10 +118,30 @@ public class PanelView extends View{
         canvas.translate(getWidth()/2,getHeight()/2);
         canvas.save();
 
-        RectF mRect=new RectF(-mRadius-10,-mRadius-10,mRadius+10,mRadius+10);
-//        canvas.drawRect(mRect,circlePaint);
-        canvas.drawArc(mRect,-240,300,false,circlePaint);
+        canvas.drawCircle(0,0,mRadius,circlePaint);
     }
+
+
+    private void drawScale(Canvas canvas)
+    {
+        for(int i =0;i<60;i++)
+        {
+            if(i%5 == 0)
+            {
+                scalePaint.setStrokeWidth(5);
+                canvas.drawLine(0,-mRadius+DEFAULT_HOUR_NEEDLE_LENGTH,0,-mRadius, scalePaint);
+            }else
+            {
+                scalePaint.setStrokeWidth(2);
+                canvas.drawLine(0,-mRadius+DEFAULT_SECOND_NEEDLE_LENGTH,0,-mRadius, scalePaint);
+            }
+
+            canvas.rotate(6);
+        }
+
+    }
+
+
 
     public int measureDimension(int defaultSize, int measureSpec){
         int result;
@@ -133,7 +150,8 @@ public class PanelView extends View{
         if(specMode == MeasureSpec.EXACTLY){
             result = specSize;
         }else{
-            result = defaultSize;   //UNSPECIFIED
+            //UNSPECIFIED
+            result = defaultSize;
             if(specMode == MeasureSpec.AT_MOST){
                 result = Math.min(result, specSize);
             }

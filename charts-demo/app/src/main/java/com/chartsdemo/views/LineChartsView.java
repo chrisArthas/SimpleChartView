@@ -145,13 +145,16 @@ public class LineChartsView extends View {
         numPaint.setColor(numColor);
         numPaint.setStrokeWidth(1);
         numPaint.setTextSize(numTextSize);
+        numPaint.setAntiAlias(true);
 
         pointPaint = new Paint();
         pointPaint.setColor(pointColor);
+        pointPaint.setAntiAlias(true);
 
         linePaint = new Paint();
         linePaint.setColor(lineColor);
         linePaint.setStrokeWidth(5);
+        linePaint.setAntiAlias(true);
 
         backLinePaint = new Paint();
         backLinePaint.setColor(backLineColor);
