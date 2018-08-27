@@ -23,17 +23,17 @@ import java.util.List;
 
 public class LineChartFragment extends Fragment{
 
-    private Button btn1;
-
-    private LineChartsView lineChartsView;
-
-    private EditText editTextYnum;
-
-    private EditText editTextXnum;
-
-    List<Integer> list;
-
-    List<String> namesList;
+//    private Button btn1;
+//
+//    private LineChartsView lineChartsView;
+//
+//    private EditText editTextYnum;
+//
+//    private EditText editTextXnum;
+//
+//    List<Integer> list;
+//
+//    List<String> namesList;
 
     public LineChartFragment() {
     }
@@ -52,70 +52,70 @@ public class LineChartFragment extends Fragment{
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initView(view);
-        initData();
+//        initView(view);
+//        initData();
     }
 
-    private void initView(View view)
-    {
-        lineChartsView = (LineChartsView)view.findViewById(R.id.linechartview);
-
-        btn1 = (Button)view.findViewById(R.id.btn1);
-
-        editTextYnum= (EditText)view.findViewById(R.id.ynum);
-        editTextXnum = (EditText)view.findViewById(R.id.xnum);
-    }
-
-    private void initData()
-    {
-        list = new ArrayList<>();
-
-        list.add(17);
-        list.add(10);
-        list.add(35);
-        list.add(14);
-        list.add(20);
-        list.add(30);
-        list.add(30);
-
-        lineChartsView.setData(list);
-
-        namesList = new ArrayList<>();
-        namesList.add("一");
-        namesList.add("二");
-        namesList.add("三");
-        namesList.add("四");
-        namesList.add("五");
-        namesList.add("六");
-        namesList.add("七");
-
-        lineChartsView.setXAxisNames(namesList);
-
-
-        lineChartsView.setYUnit(5);
-
-        lineChartsView.setYCounts(20);
-
-
-        btn1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                String ynum = editTextYnum.getText().toString();
-                String xnum = editTextXnum.getText().toString();
-                if(!ynum.equals("")&& !xnum.equals(""))
-                {
-
-                    list.add(Integer.parseInt(ynum));
-                    namesList.add(xnum);
-                }else
-                {
-                    Toast.makeText(getActivity(),"x value or y value can not be null",Toast.LENGTH_SHORT).show();
-                }
-
-
-                lineChartsView.setDataChange();
-            }
-        });
-    }
+//    private void initView(View view)
+//    {
+//        lineChartsView = (LineChartsView)view.findViewById(R.id.linechartview);
+//
+//        btn1 = (Button)view.findViewById(R.id.btn1);
+//
+//        editTextYnum= (EditText)view.findViewById(R.id.ynum);
+//        editTextXnum = (EditText)view.findViewById(R.id.xnum);
+//    }
+//
+//    private void initData()
+//    {
+//        list = new ArrayList<>();
+//
+//        list.add(17);
+//        list.add(10);
+//        list.add(35);
+//        list.add(14);
+//        list.add(20);
+//        list.add(30);
+//        list.add(30);
+//
+//        lineChartsView.setData(list);
+//
+//        namesList = new ArrayList<>();
+//        namesList.add("一");
+//        namesList.add("二");
+//        namesList.add("三");
+//        namesList.add("四");
+//        namesList.add("五");
+//        namesList.add("六");
+//        namesList.add("七");
+//
+//        lineChartsView.setXAxisNames(namesList);
+//
+//
+//        lineChartsView.setYUnit(5);
+//
+//        lineChartsView.setYCounts(20);
+//
+//
+//        btn1.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                String ynum = editTextYnum.getText().toString();
+//                String xnum = editTextXnum.getText().toString();
+//                if(!ynum.equals("")&& !xnum.equals(""))
+//                {
+//
+//                    list.add(Integer.parseInt(ynum));
+//                    namesList.add(xnum);
+//                }else
+//                {
+//                    Toast.makeText(getActivity(),"x value or y value can not be null",Toast.LENGTH_SHORT).show();
+//                }
+//
+//
+//                lineChartsView.setDataChange();
+//            }
+//        });
+//    }
 }

@@ -3,7 +3,7 @@ package com.chartsdemo.util;
 /**
  * Created by win on 2016/10/19.
  */
-public abstract class ViewUtil {
+public  class ViewUtil {
 
     public static int dp2px(float density, int dp) {
         if (dp == 0) {
