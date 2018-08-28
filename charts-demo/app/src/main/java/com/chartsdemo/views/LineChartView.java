@@ -32,9 +32,9 @@ public class LineChartView extends View {
     private int mHeight;
 
     /**
-     * Y 轴 单位数量 默认 6
+     * Y 轴 单位数量 默认 5
      */
-    int YAXIS_NUM = 6;
+    int YAXIS_NUM = 5;
 
     /**
      * X轴单位数量 默认5
@@ -180,7 +180,7 @@ public class LineChartView extends View {
             String amount = dataList.get(i).getAmount();
             point.x = x0+X_CONTENT_PADDING+unitWidth*i;
             //todo
-            point.y = y0 - Integer.parseInt(amount)/contentHeight;
+            point.y = y0 - Integer.parseInt(amount);
 
             points.add(point);
         }
@@ -259,7 +259,7 @@ public class LineChartView extends View {
             //虚线
             canvas.drawPath(path,dottedLinePaint);
             //Y轴 单位
-            canvas.drawText(unitY*(i+1)+"",paddingLeft,y0+7-unitHeight*(i+1),textPaint);
+            canvas.drawText(dataList.get(i).getAmount()+"",paddingLeft,y0+7-unitHeight*(i+1),textPaint);
 
         }
 
