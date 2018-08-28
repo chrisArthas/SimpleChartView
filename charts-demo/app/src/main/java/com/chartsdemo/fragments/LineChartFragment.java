@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.chartsdemo.R;
 import com.chartsdemo.activitys.MainActivity;
+import com.chartsdemo.views.LineChartView;
 import com.chartsdemo.views.LineChartsView;
 
 import java.util.ArrayList;
@@ -35,6 +36,8 @@ public class LineChartFragment extends Fragment{
 //
 //    List<String> namesList;
 
+    private LineChartView lineChartView;
+
     public LineChartFragment() {
     }
 
@@ -52,6 +55,8 @@ public class LineChartFragment extends Fragment{
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        lineChartView = (LineChartView) view.findViewById(R.id.line_view);
+        lineChartView.setData();
 //        initView(view);
 //        initData();
     }
