@@ -1,6 +1,8 @@
 package com.chartsdemo.views;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
@@ -8,13 +10,19 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathEffect;
 import android.graphics.Point;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.nfc.Tag;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chartsdemo.R;
@@ -23,16 +31,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ *
+ * 直播数据折线图
  *  @author Wushengyang
  *
  */
 public class LineChartView extends View {
 
-    private static final String TAG = "wsy-LineChartView";
+    private static final String TAG = "LineChartView";
 
     private int mWidth;
 
     private int mHeight;
+
+    private int MEASURE_WIDTH = 1250;
+
+    private int MEASURE_HEIGHT = 850;
 
     /**
      * Y 轴 单位数量 默认 6
@@ -75,15 +89,25 @@ public class LineChartView extends View {
     private Paint verticalPaint;
 
     /**
+     * 阴影
+     */
+    private Paint shadowPaint;
+
+    /**
      * 数据点画笔
      */
     private Paint pointPaint;
+
+    /**
+     * 气泡内部
+     */
+    private Paint bubbleTextPaint;
 
     private Context mContext;
 
     private List<Point> points;
 
-    private List<PointModel> dataList;
+    private List<LivePoint> dataList;
 
     //曲线弯曲率
     private float curveRadius = 0.2f;
@@ -107,12 +131,19 @@ public class LineChartView extends View {
     int x0,y0;
 
     //Y 轴最大的数值
-    private int maxY;
+    private int maxY = 0;
+
+    private int unitY;
+
+    /**
+     * 当前点击位置 默认-1
+     */
+    private int currentClickPosition = -1;
 
     /**
      * 数据点圆圈半径
      */
-    private int dataPointRadius = 10;
+    private int dataPointRadius = 7;
 
     public LineChartView(Context context) {
         this(context,null);
@@ -132,13 +163,13 @@ public class LineChartView extends View {
     private void initPaint()
     {
         linePaint = new Paint();
-        linePaint.setColor(getResources().getColor(R.color.new_line_red));
+        linePaint.setColor(getResources().getColor(R.color.line_red));
         linePaint.setStrokeWidth(5);
         linePaint.setAntiAlias(true);
         linePaint.setStyle(Paint.Style.STROKE);
 
         pointPaint = new Paint();
-        pointPaint.setColor(getResources().getColor(R.color.new_line_red));
+        pointPaint.setColor(getResources().getColor(R.color.line_red));
         pointPaint.setStyle(Paint.Style.STROKE);
         pointPaint.setStrokeWidth(3);
         pointPaint.setAntiAlias(true);
@@ -150,12 +181,12 @@ public class LineChartView extends View {
 
 
         axisPaint = new Paint();
-        axisPaint.setColor(getResources().getColor(R.color.new_line_red));
+        axisPaint.setColor(getResources().getColor(R.color.line_red));
         axisPaint.setAntiAlias(true);
         axisPaint.setStrokeWidth(3);
 
         verticalPaint = new Paint();
-        verticalPaint.setColor(getResources().getColor(R.color.new_line_red));
+        verticalPaint.setColor(getResources().getColor(R.color.line_red));
         verticalPaint.setAntiAlias(true);
         verticalPaint.setStrokeWidth(1);
         verticalPaint.setAlpha(80);
@@ -167,21 +198,25 @@ public class LineChartView extends View {
         dottedLinePaint.setAlpha(80);
         PathEffect pathEffect = new DashPathEffect(new float[]{5,5},0);
         dottedLinePaint.setPathEffect(pathEffect);
+
+
+        shadowPaint = new Paint();
+        shadowPaint.setColor(getResources().getColor(R.color.light_red));
+        shadowPaint.setStyle(Paint.Style.FILL);
+        shadowPaint.setAlpha(50);
+        shadowPaint.setAntiAlias(true);
+
+        bubbleTextPaint = new Paint();
+        bubbleTextPaint.setColor(Color.WHITE);
+        bubbleTextPaint.setTextSize(22);
+        bubbleTextPaint.setFakeBoldText(true);
+        bubbleTextPaint.setAntiAlias(true);
+        bubbleTextPaint.setTextAlign(Paint.Align.LEFT);
     }
 
-    public void setData()
+    public void setData(List<LivePoint> list)
     {
-        dataList = new ArrayList<>();
-        dataList.add(new PointModel("170","10:00"));
-        dataList.add(new PointModel("220","3:30"));
-        dataList.add(new PointModel("350","4:00"));
-        dataList.add(new PointModel("480","4:30"));
-        dataList.add(new PointModel("503","5:00"));
-        dataList.add(new PointModel("503","5:00"));
-        dataList.add(new PointModel("1003","5:00"));
-        dataList.add(new PointModel("503","5:00"));
-
-
+        dataList = list;
 
         XAXIS_NUM = dataList.size();
 
@@ -190,21 +225,22 @@ public class LineChartView extends View {
         //X轴原点
         x0 = paddingLeft + 50;
 
-        int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(1200, View.MeasureSpec.EXACTLY);
-        int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(700,View.MeasureSpec.EXACTLY);
+        int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(MEASURE_WIDTH, View.MeasureSpec.EXACTLY);
+        int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(MEASURE_HEIGHT, View.MeasureSpec.EXACTLY);
         measure(widthMeasureSpec,heightMeasureSpec);
         mWidth = getMeasuredWidth();
         mHeight = getMeasuredHeight();
 
         y0 = mHeight- paddingBottom - 50;
 
-         maxY = getMaxY();
+        maxY = getMaxY();
 
         //图表内容 总高度
         int contentHeight = y0 - 100;
 
         //Y轴 单位数值
-        int unitY = maxY/YAXIS_NUM;
+//         unitY = maxY/YAXIS_NUM;
+        unitY = getUnitY();
 
         //比列
         float yUnitRadio = (float)contentHeight/(YAXIS_NUM*unitY);
@@ -219,7 +255,7 @@ public class LineChartView extends View {
         for(int i = 0;i<dataList.size();i++)
         {
             Point point = new Point();
-            String amount = dataList.get(i).getAmount();
+            String amount = dataList.get(i).getY();
             point.x = x0+X_CONTENT_PADDING+unitWidth*i;
             point.y = (int)(y0 - Integer.parseInt(amount)*yUnitRadio);
             points.add(point);
@@ -241,8 +277,6 @@ public class LineChartView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-
         //TODO 无数据时 暂时不处理
         if(points == null || points.size() == 0)
         {
@@ -259,6 +293,7 @@ public class LineChartView extends View {
 
         drawPoint(canvas);
 
+        drawBubble(canvas);
     }
 
 
@@ -297,7 +332,7 @@ public class LineChartView extends View {
             //虚线
             canvas.drawPath(path,dottedLinePaint);
             //Y轴 单位
-            canvas.drawText(maxY-(YAXIS_NUM-1-i)*(maxY/YAXIS_NUM)+"",paddingLeft,y0+7-unitHeight*(i+1),textPaint);
+            canvas.drawText(unitY*(i+1)+"",paddingLeft,y0+7-unitHeight*(i+1),textPaint);
 
         }
 
@@ -311,7 +346,7 @@ public class LineChartView extends View {
             canvas.drawLine(x0+X_CONTENT_PADDING+unitWidth*i,y0,points.get(i).x,points.get(i).y,verticalPaint);
 
             //x轴下的数值
-            canvas.drawText(dataList.get(i).getTime(),x0+unitWidth*i - 15 + X_CONTENT_PADDING,y0 + 30,textPaint);
+            canvas.drawText(dataList.get(i).getX(),x0+unitWidth*i - 15 + X_CONTENT_PADDING,y0 + 30,textPaint);
         }
         linePaint.setStyle(Paint.Style.STROKE);
 
@@ -335,8 +370,27 @@ public class LineChartView extends View {
         {
             int x = points.get(i).x;
             int y = points.get(i).y;
-            canvas.drawCircle(x,y,dataPointRadius-1,pointPaint);
+            canvas.drawCircle(x,y,dataPointRadius-2,pointPaint);
         }
+
+        pointPaint.setColor(getResources().getColor(R.color.line_red));
+        pointPaint.setStyle(Paint.Style.STROKE);
+
+    }
+
+    private void drawBubble(Canvas canvas)
+    {
+        if(currentClickPosition == -1 || currentClickPosition > points.size()-1)
+        {
+            return;
+        }
+
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.mipmap.popup);
+        int x = points.get(currentClickPosition).x;
+        int y = points.get(currentClickPosition).y;
+        canvas.drawBitmap(bitmap,x-40,y-120,null);
+
+        canvas.drawText(dataList.get(currentClickPosition).getY(),x-20,y-70,bubbleTextPaint);
     }
 
     /**
@@ -404,18 +458,16 @@ public class LineChartView extends View {
 
     private void drawShadow(Canvas canvas)
     {
-        shadowPath = new Path();
-        shadowPath.reset();
-        shadowPath.addPath(mPath);
-        shadowPath.lineTo(x0+X_CONTENT_PADDING+unitWidth*(XAXIS_NUM-1),y0);
-        shadowPath.lineTo(x0+X_CONTENT_PADDING,y0);
-        shadowPath.close();
-        Paint shadowPaint = new Paint();
-        shadowPaint.setColor(getResources().getColor(R.color.panel_blue));
-        shadowPaint.setStyle(Paint.Style.FILL);
-        shadowPaint.setAlpha(50);
-        shadowPaint.setAntiAlias(true);
+        if(shadowPath == null)
+        {
+            shadowPath = new Path();
+            shadowPath.addPath(mPath);
+            shadowPath.lineTo(x0+X_CONTENT_PADDING+unitWidth*(XAXIS_NUM-1),y0);
+            shadowPath.lineTo(x0+X_CONTENT_PADDING,y0);
+            shadowPath.close();
+        }
         canvas.drawPath(shadowPath,shadowPaint);
+
 //        int save = canvas.save();
 //        canvas.clipPath(shadowPath);
 //        canvas.restoreToCount(save);
@@ -428,11 +480,11 @@ public class LineChartView extends View {
     private int getMaxY()
     {
         int maxY = 0;
-        for(PointModel point:dataList)
+        for(LivePoint point:dataList)
         {
-            if(Integer.parseInt(point.getAmount()) - maxY > 0)
+            if(Integer.parseInt(point.getY()) - maxY > 0)
             {
-                maxY = Integer.parseInt(point.getAmount());
+                maxY = Integer.parseInt(point.getY());
             }
         }
         if(maxY%100 > 0)
@@ -442,27 +494,30 @@ public class LineChartView extends View {
         return maxY;
     }
 
+    /**
+     * 计算适合的Y轴单位数值
+     * @return
+     */
+    private int getUnitY() {
+        int num = 100;
+        int length = Integer.toString(maxY).length();
+        if (maxY == 0) {
+            YAXIS_NUM = 6;
+            return num;
+        }
 
-    public class PointModel
-    {
-        private String amount;
-        private String time;
-        public PointModel(String amount,String time)
+        if(maxY > 6*Math.pow(10,length-1))
         {
-            this.amount = amount;
-            this.time = time;
+            YAXIS_NUM = 5;
+            num = 2*(int)Math.pow(10,length-1);
+        }else
+        {
+            YAXIS_NUM = 6;
+            num = 1*(int)Math.pow(10,length-1);
         }
-
-        public String getAmount() {
-            return amount;
-        }
-
-
-        public String getTime() {
-            return time;
-        }
-
+        return num;
     }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -470,11 +525,18 @@ public class LineChartView extends View {
         switch (event.getAction())
         {
             case MotionEvent.ACTION_DOWN:
-
+                int lastClick = currentClickPosition;
                 int i = checkPoint(event);
                 if(i != -1)
                 {
-                    Toast.makeText(mContext,"click: " + (i+1) +" num is: " + dataList.get(i).getAmount(),Toast.LENGTH_SHORT).show();
+//                    showPop(event,dataList.get(i).getY(),i);
+                    currentClickPosition = i;
+                }else{
+                    currentClickPosition = -1;
+                }
+                if(lastClick != currentClickPosition)
+                {
+                    invalidate();
                 }
                 break;
         }

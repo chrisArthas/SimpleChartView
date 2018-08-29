@@ -14,6 +14,7 @@ import com.chartsdemo.R;
 import com.chartsdemo.activitys.MainActivity;
 import com.chartsdemo.views.LineChartView;
 import com.chartsdemo.views.LineChartsView;
+import com.chartsdemo.views.LivePoint;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +57,15 @@ public class LineChartFragment extends Fragment{
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         lineChartView = (LineChartView) view.findViewById(R.id.line_view);
-        lineChartView.setData();
+        List<LivePoint> livePoints = new ArrayList<>();
+        livePoints.add(new LivePoint("198","3:00"));
+        livePoints.add(new LivePoint("366","3:00"));
+        livePoints.add(new LivePoint("726","3:00"));
+        livePoints.add(new LivePoint("405","3:00"));
+        livePoints.add(new LivePoint("150","3:00"));
+
+
+        lineChartView.setData(livePoints);
 //        initView(view);
 //        initData();
     }

@@ -23,4 +23,12 @@
 
     <!-- new line -->
     <color name="new_line_red">#E2344A</color>
+
+    <color name="shadow_color">#FFF9F9</color>
+
+    <!--直播数据-->
+    <color name="XY_text_black">#5F5F5F</color>
+    <color name="top_big_red">#A83034</color>
+    <color name="line_red">#E43838</color>
+    <color name="light_red">#F9CECE</color>
 </resources>
