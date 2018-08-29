@@ -250,7 +250,13 @@ public class LineChartView extends View {
         int contentWidth  = mWidth - paddingRight - x0;
 
         //x 轴单位宽度
-        unitWidth =  (contentWidth-X_CONTENT_PADDING*2)/(XAXIS_NUM-1);
+        if(XAXIS_NUM >1)
+        {
+            unitWidth =  (contentWidth-X_CONTENT_PADDING*2)/(XAXIS_NUM-1);
+        }else
+        {
+            unitWidth =  (contentWidth-X_CONTENT_PADDING*2);
+        }
 
         for(int i = 0;i<dataList.size();i++)
         {
@@ -278,9 +284,11 @@ public class LineChartView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         //TODO 无数据时 暂时不处理
-        if(points == null || points.size() == 0)
+        if(points == null || points.size() == 0 || dataList == null ||dataList.size() == 0)
         {
-            return;
+            YAXIS_NUM = 6;
+            unitY = 100;
+            XAXIS_NUM = 0;
         }
 
         drawAxis(canvas);
@@ -318,7 +326,6 @@ public class LineChartView extends View {
 
 
         canvas.drawText("0",paddingLeft,y0+7,textPaint);
-
 
 
         //Y 轴单元高度
@@ -412,12 +419,20 @@ public class LineChartView extends View {
                 float Ax0 = x+(points.get(i+1).x - x)* curveRadius;
                 float Ay0 = y+(points.get(i+1).y - y)* curveRadius;
 
+                if(Ay0>y0)
+                {
+                    Ay0 = y0;
+                }
                 Log.i(TAG,"Ax0: "+Ax0 + " Ay0: "+Ay0);
 
 
                 float Bx0 = points.get(i+1).x - (points.get(i+2).x - x)* curveRadius;
                 float By0 = points.get(i+1).y - (points.get(i+2).y - y)* curveRadius;
 
+                if(By0 > y0)
+                {
+                    By0 = y0;
+                }
                 Log.i(TAG,"Bx0: "+Bx0 + " By0: "+By0);
 
                 mPath.cubicTo(Ax0,Ay0,Bx0,By0,points.get(i+1).x,points.get(i+1).y);
@@ -428,10 +443,20 @@ public class LineChartView extends View {
                 float Axi = points.get(i).x+(points.get(i+1).x-points.get(i-1).x)* curveRadius;
                 float Ayi = points.get(i).y+(points.get(i+1).y-points.get(i-1).y)* curveRadius;
 
+                if(Ayi>y0)
+                {
+                    Ayi = y0;
+                }
+
                 Log.i(TAG,"Ax"+i+": "+Axi + " Ay"+i+": "+Ayi);
 
                 float Bxi = points.get(i+1).x - (points.get(i+1).x - points.get(i).x)* curveRadius;
                 float Byi = points.get(i+1).y - (points.get(i+1).y - points.get(i).y)* curveRadius;
+
+                if(Byi>y0)
+                {
+                    Byi = y0;
+                }
 
                 Log.i(TAG,"Bx"+i+": "+Bxi + " By"+i+": "+Byi);
 
@@ -441,11 +466,21 @@ public class LineChartView extends View {
                 float Axi = points.get(i).x+(points.get(i+1).x-points.get(i-1).x)* curveRadius;
                 float Ayi = points.get(i).y+(points.get(i+1).y-points.get(i-1).y)* curveRadius;
 
+                if(Ayi>y0)
+                {
+                    Ayi = y0;
+                }
+
                 Log.i(TAG,"Ax"+i+": "+Axi + " Ay"+i+": "+Ayi);
 
 
                 float Bxi = points.get(i+1).x - (points.get(i+2).x - points.get(i).x)* curveRadius;
                 float Byi = points.get(i+1).y - (points.get(i+2).y - points.get(i).y)* curveRadius;
+
+                if(Byi>y0)
+                {
+                    Byi = y0;
+                }
 
                 Log.i(TAG,"Bx"+i+"i: "+Bxi + " By"+i+": "+Byi);
 
@@ -466,7 +501,10 @@ public class LineChartView extends View {
             shadowPath.lineTo(x0+X_CONTENT_PADDING,y0);
             shadowPath.close();
         }
-        canvas.drawPath(shadowPath,shadowPaint);
+        if(!mPath.isEmpty())
+        {
+            canvas.drawPath(shadowPath,shadowPaint);
+        }
 
 //        int save = canvas.save();
 //        canvas.clipPath(shadowPath);
@@ -487,10 +525,6 @@ public class LineChartView extends View {
                 maxY = Integer.parseInt(point.getY());
             }
         }
-        if(maxY%100 > 0)
-        {
-            maxY = maxY - maxY%100 + 100;
-        }
         return maxY;
     }
 
@@ -505,15 +539,42 @@ public class LineChartView extends View {
             YAXIS_NUM = 6;
             return num;
         }
-
-        if(maxY > 6*Math.pow(10,length-1))
+        if(length == 1 )
         {
             YAXIS_NUM = 5;
-            num = 2*(int)Math.pow(10,length-1);
-        }else
+            num = 2;
+        }else if(maxY == (int)Math.pow(10,length-1))
+        {
+            YAXIS_NUM = 5;
+            num = 2 *(int)Math.pow(10,length-2);
+        }else if(maxY <= 2*(int)Math.pow(10,length-1) && maxY > (int)Math.pow(10,length-1))
+        {
+            YAXIS_NUM = 4;
+            num = 5 * (int)Math.pow(10,length-2);
+        }else if(maxY <= 3*(int)Math.pow(10,length-1) && maxY > 2*(int)Math.pow(10,length-1))
+        {
+            YAXIS_NUM = 6;
+            num = 5 * (int)Math.pow(10,length-2);
+        }else if(maxY <= 4*(int)Math.pow(10,length-1) && maxY > 3*(int)Math.pow(10,length-1))
+        {
+            YAXIS_NUM = 5;
+            num = (int)Math.pow(10,length-1);
+        }else if(maxY <= 5*(int)Math.pow(10,length-1) && maxY > 4*(int)Math.pow(10,length-1))
+        {
+            YAXIS_NUM = 5;
+            num = 1 * (int)Math.pow(10,length-1);
+        }else if(maxY <= 6*(int)Math.pow(10,length-1) && maxY > 5*(int)Math.pow(10,length-1))
         {
             YAXIS_NUM = 6;
             num = 1*(int)Math.pow(10,length-1);
+        }else if(maxY > 6 *(int)Math.pow(10,length-1) && maxY <= 8*(int)Math.pow(10,length-1))
+        {
+            YAXIS_NUM = 4;
+            num = 2*(int)Math.pow(10,length-1);
+        }else if(maxY > 8*(int)Math.pow(10,length-1))
+        {
+            YAXIS_NUM = 5;
+            num = 2*(int)Math.pow(10,length-1);
         }
         return num;
     }
