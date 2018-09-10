@@ -58,11 +58,30 @@ public class LineChartFragment extends Fragment{
         super.onViewCreated(view, savedInstanceState);
         lineChartView = (LineChartView) view.findViewById(R.id.line_view);
         List<LivePoint> livePoints = new ArrayList<>();
-        livePoints.add(new LivePoint("198","3:00"));
-        livePoints.add(new LivePoint("366","3:00"));
-        livePoints.add(new LivePoint("726","3:00"));
-        livePoints.add(new LivePoint("405","3:00"));
-        livePoints.add(new LivePoint("150","3:00"));
+        livePoints.add(new LivePoint("10","00:00"));
+        livePoints.add(new LivePoint("43","01:00"));
+        livePoints.add(new LivePoint("88","02:00"));
+        livePoints.add(new LivePoint("104","03:00"));
+        livePoints.add(new LivePoint("76","04:00"));
+        livePoints.add(new LivePoint("55","05:00"));
+        livePoints.add(new LivePoint("70","06:00"));
+        livePoints.add(new LivePoint("88","07:00"));
+        livePoints.add(new LivePoint("110","08:00"));
+        livePoints.add(new LivePoint("120","09:00"));
+        livePoints.add(new LivePoint("130","10:00"));
+        livePoints.add(new LivePoint("100","11:00"));
+        livePoints.add(new LivePoint("40","12:00"));
+        livePoints.add(new LivePoint("20","13:00"));
+        livePoints.add(new LivePoint("10","14:00"));
+        livePoints.add(new LivePoint("80","15:00"));
+        livePoints.add(new LivePoint("100","16:00"));
+        livePoints.add(new LivePoint("150","17:00"));
+        livePoints.add(new LivePoint("90","18:00"));
+        livePoints.add(new LivePoint("60","19:00"));
+        livePoints.add(new LivePoint("50","20:00"));
+        livePoints.add(new LivePoint("30","21:00"));
+        livePoints.add(new LivePoint("30","22:00"));
+        livePoints.add(new LivePoint("10","23:00"));
 
 
         lineChartView.setData(livePoints);
