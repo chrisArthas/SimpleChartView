@@ -164,6 +164,11 @@ public class LineChartView extends View {
      */
     private boolean needCaculateDistance = false;
 
+    /**
+     * 内容 刷新区域
+     */
+    private Rect contentRect;
+
 
 
     /**
@@ -266,6 +271,9 @@ public class LineChartView extends View {
         contentWidth  = mWidth - paddingRight - x0;
 
         touchSlop = ViewConfiguration.get(mContext).getScaledTouchSlop();
+
+        contentRect = new Rect(paddingLeft + 50,y0-contentHeight,mWidth-paddingRight,y0+30);
+
     }
 
     public void setData(List<LivePoint> list)
@@ -332,32 +340,19 @@ public class LineChartView extends View {
             XAXIS_NUM = 0;
 
             drawYAxis(canvas);
+            drawDottedLine(canvas);
             drawXAxis(canvas);
 
         }else
         {
+
             drawYAxis(canvas);
 
             canvas.save();
 
-            Rect rect = new Rect(paddingLeft + 50,y0-contentHeight,mWidth-paddingRight,y0+30);
+            canvas.clipRect(contentRect);
 
-            canvas.clipRect(rect);
-
-            for(int i = 0;i <YAXIS_NUM;i++)
-            {
-                Path path = new Path();
-                path.moveTo(x0,y0 -unitHeight*(i+1));
-            if(points != null && points.size() != 0)
-            {
-                path.lineTo(unitWidth*points.size(),y0-unitHeight*(i+1));
-            }else
-            {
-                path.lineTo(mWidth - paddingRight,y0-unitHeight*(i+1));
-            }
-            //虚线
-                canvas.drawPath(path,dottedLinePaint);
-            }
+            drawDottedLine(canvas);
 
             Log.i(TAG,"onDraw: lastMoveDistance: " + lastMoveDistance +" moveDistance: "+moveDistance);
 
@@ -421,13 +416,34 @@ public class LineChartView extends View {
     }
 
     /**
+     * 虚线
+     */
+    private void drawDottedLine(Canvas canvas)
+    {
+        //X轴
+        xWidth = unitWidth*points.size();
+        if(xWidth < mWidth - paddingRight - paddingLeft - 50)
+        {
+            xWidth = mWidth - paddingRight - paddingLeft - 50;
+        }
+
+        for(int i = 0;i <YAXIS_NUM;i++)
+        {
+            Path path = new Path();
+            path.moveTo(x0,y0 -unitHeight*(i+1));
+            path.lineTo(xWidth + paddingLeft + 50,y0-unitHeight*(i+1));
+
+            //虚线
+            canvas.drawPath(path,dottedLinePaint);
+        }
+    }
+
+    /**
      * X轴
      * @param canvas
      */
     private void drawXAxis(Canvas canvas)
     {
-        //X轴
-        xWidth = unitWidth*points.size();
         canvas.drawLine(x0,y0,xWidth + paddingLeft + 50,y0,axisPaint);
 
         for(int i = 0;i<XAXIS_NUM;i++)
@@ -685,6 +701,10 @@ public class LineChartView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if(points == null || points.size() == 0)
+        {
+            return false;
+        }
         switch (event.getAction())
         {
             case MotionEvent.ACTION_DOWN:
