@@ -52,6 +52,13 @@ public class LineChartView extends View {
     private int XAXIS_NUM = 5;
 
     /**
+     * 绘制时，只绘制当前可见的位置
+     */
+    private int startNum = 0;
+
+    private int endNum = XAXIS_NUM;
+
+    /**
      * X轴第一个以及最后一个坐标点的padding
      */
     private int X_CONTENT_PADDING = 50;
@@ -266,7 +273,7 @@ public class LineChartView extends View {
         contentHeight = y0 - 120;
 
         //X轴固定单位长
-        unitWidth = 100;
+        unitWidth = 200;
 
         contentWidth  = mWidth - paddingRight - x0;
 
@@ -286,7 +293,11 @@ public class LineChartView extends View {
 
         dataList = list;
 
-        XAXIS_NUM = dataList.size();
+         XAXIS_NUM = dataList.size();
+         if(XAXIS_NUM > 9)
+         {
+             endNum = 9;
+         }
 
         maxY = getMaxY();
 
@@ -337,7 +348,7 @@ public class LineChartView extends View {
             //无数据时，只展示坐标轴
             YAXIS_NUM = 6;
             unitY = 100;
-            XAXIS_NUM = 0;
+            endNum = XAXIS_NUM = 0;
 
             drawYAxis(canvas);
             drawDottedLine(canvas);
@@ -398,20 +409,8 @@ public class LineChartView extends View {
 
         for(int i = 0;i <YAXIS_NUM;i++)
         {
-//            Path path = new Path();
-//            path.moveTo(x0,y0 -unitHeight*(i+1));
-//            if(points != null && points.size() != 0)
-//            {
-//                path.lineTo(unitWidth*points.size(),y0-unitHeight*(i+1));
-//            }else
-//            {
-//                path.lineTo(mWidth - paddingRight,y0-unitHeight*(i+1));
-//            }
-//            //虚线
-//            canvas.drawPath(path,dottedLinePaint);
             //Y轴 单位
             canvas.drawText(unitY*(i+1)+"",paddingLeft,y0+7-unitHeight*(i+1),textPaint);
-
         }
     }
 
@@ -436,6 +435,7 @@ public class LineChartView extends View {
             //虚线
             canvas.drawPath(path,dottedLinePaint);
         }
+
     }
 
     /**
@@ -446,7 +446,7 @@ public class LineChartView extends View {
     {
         canvas.drawLine(x0,y0,xWidth + paddingLeft + 50,y0,axisPaint);
 
-        for(int i = 0;i<XAXIS_NUM;i++)
+        for(int i = startNum;i<endNum;i++)
         {
             linePaint.setStyle(Paint.Style.FILL);
             //x轴上的点
@@ -466,7 +466,7 @@ public class LineChartView extends View {
      */
     private void drawPoint(Canvas canvas)
     {
-        for(int i = 0;i<points.size();i++)
+        for(int i = startNum;i<endNum;i++)
         {
             int x = points.get(i).x;
             int y = points.get(i).y;
@@ -475,13 +475,12 @@ public class LineChartView extends View {
         //圆圈内部涂白 >_<
         pointPaint.setColor(Color.WHITE);
         pointPaint.setStyle(Paint.Style.FILL);
-        for(int i = 0;i<points.size();i++)
+        for(int i = startNum;i<endNum;i++)
         {
             int x = points.get(i).x;
             int y = points.get(i).y;
             canvas.drawCircle(x,y,dataPointRadius-2,pointPaint);
         }
-
         pointPaint.setColor(getResources().getColor(R.color.line_red));
         pointPaint.setStyle(Paint.Style.STROKE);
 
@@ -541,11 +540,11 @@ public class LineChartView extends View {
             mPath.lineTo(points.get(1).x,points.get(1).y);
         }else
         {
-            for(int i = 0; i < points.size() -1;i++)
+            for(int i = startNum; i < endNum -1;i++)
             {
                 int x = points.get(i).x;
                 int y = points.get(i).y;
-                if(i == 0)
+                if(i == startNum)
                 {
                     mPath.moveTo(x,y);
 
@@ -566,7 +565,7 @@ public class LineChartView extends View {
                     }
                     mPath.cubicTo(Ax0,Ay0,Bx0,By0,points.get(i+1).x,points.get(i+1).y);
 
-                }else if(i == points.size() - 2)
+                }else if(i == endNum - 2)
                 {
 
                     float Axi = points.get(i).x+(points.get(i+1).x-points.get(i-1).x)* curveRadius;
@@ -619,7 +618,7 @@ public class LineChartView extends View {
             shadowPath.reset();
         }
         shadowPath.addPath(mPath);
-        shadowPath.lineTo(x0+X_CONTENT_PADDING+unitWidth*(XAXIS_NUM-1),y0);
+        shadowPath.lineTo(x0+X_CONTENT_PADDING+unitWidth*(endNum-1),y0);
         shadowPath.lineTo(x0+X_CONTENT_PADDING,y0);
         shadowPath.close();
 
@@ -742,6 +741,13 @@ public class LineChartView extends View {
 
                     needCaculateDistance = true;
                     moveDistance = (int)distance;
+                    startNum = Math.abs(lastMoveDistance + moveDistance + X_CONTENT_PADDING)/unitWidth;
+                    endNum = startNum + 8;
+                    if(endNum > points.size())
+                    {
+                        endNum = points.size();
+                    }
+                    Log.i(TAG,"startNum: "+startNum+" endNum: "+endNum);
                     invalidate();
                 }
                 break;
