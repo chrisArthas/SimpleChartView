@@ -210,7 +210,8 @@ public class LineChartView extends View {
         pointPaint = new Paint();
         pointPaint.setColor(getResources().getColor(R.color.line_red));
         pointPaint.setStyle(Paint.Style.STROKE);
-        pointPaint.setStrokeWidth(3);
+        pointPaint.setStrokeCap(Paint.Cap.ROUND);
+        pointPaint.setStrokeWidth(15);
         pointPaint.setAntiAlias(true);
 
         textPaint = new Paint();
@@ -426,16 +427,15 @@ public class LineChartView extends View {
             xWidth = mWidth - paddingRight - paddingLeft - 50;
         }
 
+        Path path = new Path();
+
         for(int i = 0;i <YAXIS_NUM;i++)
         {
-            Path path = new Path();
             path.moveTo(x0,y0 -unitHeight*(i+1));
             path.lineTo(xWidth + paddingLeft + 50,y0-unitHeight*(i+1));
-
             //虚线
-            canvas.drawPath(path,dottedLinePaint);
         }
-
+        canvas.drawPath(path,dottedLinePaint);
     }
 
     /**
@@ -446,18 +446,36 @@ public class LineChartView extends View {
     {
         canvas.drawLine(x0,y0,xWidth + paddingLeft + 50,y0,axisPaint);
 
+        float[] circleXY = new float[(endNum - startNum) * 2];
+        float[] lines = new float[(endNum - startNum) * 4];
         for(int i = startNum;i<endNum;i++)
         {
             linePaint.setStyle(Paint.Style.FILL);
             //x轴上的点
-            canvas.drawCircle(x0+X_CONTENT_PADDING+unitWidth*i,y0,5,linePaint);
+//            canvas.drawCircle(x0+X_CONTENT_PADDING+unitWidth*i,y0,5,linePaint);
+            circleXY[(i - startNum)*2 ] = x0+X_CONTENT_PADDING+unitWidth*i;
+            circleXY[(i - startNum)*2 + 1] = y0;
+
 
             //x轴与数据点连接线
-            canvas.drawLine(x0+X_CONTENT_PADDING+unitWidth*i,y0,points.get(i).x,points.get(i).y,verticalPaint);
+//            canvas.drawLine(x0+X_CONTENT_PADDING+unitWidth*i,y0,points.get(i).x,points.get(i).y,verticalPaint);
+
+            lines[(i - startNum)*4 ] = x0+X_CONTENT_PADDING+unitWidth*i;
+            lines[(i - startNum)*4 +1 ] = y0;
+            lines[(i - startNum)*4 +2 ] = points.get(i).x;
+            lines[(i - startNum)*4 +3 ] = points.get(i).y;
+
 
             //x轴下的数值
             canvas.drawText(dataList.get(i).getX(),x0+unitWidth*i - 15 + X_CONTENT_PADDING,y0 + 30,textPaint);
         }
+        linePaint.setStrokeCap(Paint.Cap.ROUND);
+        linePaint.setStrokeWidth(10);
+        canvas.drawPoints(circleXY,linePaint);
+
+        canvas.drawLines(lines,verticalPaint);
+
+        linePaint.setStrokeWidth(5);
         linePaint.setStyle(Paint.Style.STROKE);
     }
 
@@ -466,21 +484,31 @@ public class LineChartView extends View {
      */
     private void drawPoint(Canvas canvas)
     {
+        float[] circleXY = new float[(endNum - startNum) * 2];
+
+
         for(int i = startNum;i<endNum;i++)
         {
             int x = points.get(i).x;
             int y = points.get(i).y;
-            canvas.drawCircle(x,y,dataPointRadius,pointPaint);
+
+            circleXY[(i - startNum)*2 ] = x;
+            circleXY[(i - startNum)*2 +1 ] = y;
+
+//            canvas.drawCircle(x,y,dataPointRadius,pointPaint);
         }
+        canvas.drawPoints(circleXY,pointPaint);
+
+
         //圆圈内部涂白 >_<
         pointPaint.setColor(Color.WHITE);
         pointPaint.setStyle(Paint.Style.FILL);
-        for(int i = startNum;i<endNum;i++)
-        {
-            int x = points.get(i).x;
-            int y = points.get(i).y;
-            canvas.drawCircle(x,y,dataPointRadius-2,pointPaint);
-        }
+
+        pointPaint.setStrokeCap(Paint.Cap.ROUND);
+        pointPaint.setStrokeWidth(10);
+        canvas.drawPoints(circleXY,pointPaint);
+
+        pointPaint.setStrokeWidth(15);
         pointPaint.setColor(getResources().getColor(R.color.line_red));
         pointPaint.setStyle(Paint.Style.STROKE);
 
